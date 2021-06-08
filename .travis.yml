@@ -16,10 +16,10 @@ after_success:
   - docker build -t arvind/multi-worker ./worker
 
   # Login to docker hub
-  -echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
   # Pushing to docker hub
-  - docker push arvind/multi-client 
+  - docker push arvind/multi-client
   - docker push arvind/multi-nginx
   - docker push arvind/multi-server
   - docker push arvind/multi-worker
