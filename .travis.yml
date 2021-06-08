@@ -1,0 +1,25 @@
+sudo: required
+services:
+  - docker
+before_install:
+  # use Dockerfile.dev which is found inside ./client for building the image
+  - docker build -t arvind/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true arvind/react-test npm test
+
+after_success:
+  # Building each image. checking the respected folders for Dockerfile.
+  - docker build -t arvind/multi-client ./client
+  - docker build -t arvind/multi-nginx ./nginx
+  - docker build -t arvind/multi-server ./server
+  - docker build -t arvind/multi-worker ./worker
+
+  # Login to docker hub
+  -echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+  # Pushing to docker hub
+  - docker push arvind/multi-client 
+  - docker push arvind/multi-nginx
+  - docker push arvind/multi-server
+  - docker push arvind/multi-worker
