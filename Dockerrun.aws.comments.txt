@@ -1,0 +1,33 @@
+// We dont have to configure aws if we are using a single container
+
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "client",     
+      "image": "arvindmocha/multi-client",      // docker hub repository
+      "hostname": "client",     // Name of the host is the name of the container. check docker-compose file
+      "essential": false        // essential false because if this container fails or crashes other containers should not stop
+    },
+    {
+        "name": "server",
+        "image": "arvindmocha/multi-server",
+        "hostname": "api",      // Host name is api not server because we have name it as api in the nginx configurations folder
+        "essential": false
+    },
+    {
+        "name": "worker",
+        "image": "arvindmocha/multi-worker",
+        //  Hostname is not required since we are not going to visit this worker or get any data from worker 
+        "essential": false
+    },
+    {
+      "name": "nginx",
+      "image": "arvindmocha/multi-nginx",
+      "essential": true,
+      "portMappings": [{ "hostPort": 80, "containerPort": 80 }],    // Mapping inner ports to the outer world ports
+      "links": ["client", "server"] // docker compose might know available services but 
+                                    // AWS does not know the links or services that are available so we must do this
+    }
+  ]
+}
